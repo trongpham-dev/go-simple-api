@@ -14,7 +14,7 @@ import (
 
 type localPubSub struct {
 	messageQueue chan *pubsub.Message
-	mapChannel   map[pubsub.Topic][]chan *pubsub.Message
+	mapChannel   map[pubsub.Topic][]chan *pubsub.Message // 1 topic name hold multiple subscribers
 	locker       *sync.RWMutex
 }
 

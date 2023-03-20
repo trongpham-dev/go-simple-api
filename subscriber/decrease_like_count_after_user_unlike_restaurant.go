@@ -5,9 +5,10 @@ import (
 	"go-simple-api/component"
 	"go-simple-api/modules/restaurant/restaurantstorage"
 	"go-simple-api/pubsub"
+	"go-simple-api/skio"
 )
 
-func RunDecreaseLikeCountAfterUserUnlikeRestaurant(appCtx component.AppContext) consumerJob {
+func RunDecreaseLikeCountAfterUserUnlikeRestaurant(appCtx component.AppContext, rtEngine skio.RealtimeEngine) consumerJob {
 	return consumerJob{
 		Title: "Decrease like count after user unlikes restaurant",
 		Hld: func(ctx context.Context, message *pubsub.Message) error {

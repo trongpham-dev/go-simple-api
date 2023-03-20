@@ -6,10 +6,12 @@ import (
 	"go-simple-api/component"
 	"go-simple-api/modules/restaurant/restaurantstorage"
 	"go-simple-api/pubsub"
+	"go-simple-api/skio"
 )
 
 type HasRestaurantId interface {
 	GetRestaurantId() int
+	GetUserId() int
 }
 
 func IncreaseLikeCountAfterUserLikeRestaurant(appCtx component.AppContext, ctx context.Context) {
@@ -43,18 +45,18 @@ func RunIncreaseLikeCountAfterUserLikeRestaurant(appCtx component.AppContext) co
 		Hld: func(ctx context.Context, message *pubsub.Message) error {
 			store := restaurantstorage.NewSQLStore(appCtx.GetMainDBConnection())
 			likeData := message.Data().(HasRestaurantId)
+
 			return store.IncreaseLikeCount(ctx, likeData.GetRestaurantId())
 		},
 	}
 }
 
-func RunDecreaseLikeCountAfterUserLikeRestaurant(appCtx component.AppContext) consumerJob {
+func EmitRealtimeAfterUserLikeRestaurant(appCtx component.AppContext, rtEngine skio.RealtimeEngine) consumerJob {
 	return consumerJob{
-		Title: "Decrease like count after user likes restaurant",
+		Title: "Emit realtime after user likes restaurant",
 		Hld: func(ctx context.Context, message *pubsub.Message) error {
-			store := restaurantstorage.NewSQLStore(appCtx.GetMainDBConnection())
 			likeData := message.Data().(HasRestaurantId)
-			return store.DecreaseLikeCount(ctx, likeData.GetRestaurantId())
+			return rtEngine.EmitToUser(likeData.GetUserId(), string(message.Channel()), likeData)
 		},
 	}
 }

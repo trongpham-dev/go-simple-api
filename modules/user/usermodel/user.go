@@ -18,6 +18,7 @@ type User struct {
 	Phone           string        `json:"phone" gorm:"column:phone;"`
 	Role            string        `json:"role" gorm:"column:role;"`
 	Avatar          *common.Image `json:"avatar,omitempty" gorm:"column:avatar;type:json"`
+	IsOnline        bool          `json:"is_online" gorm:"-"`
 }
 
 func (u *User) GetUserId() int {
